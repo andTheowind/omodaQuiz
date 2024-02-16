@@ -1,0 +1,76 @@
+{
+  "cars": [
+    {
+      "primaryColor": "#94A474",
+      "secondaryColor": "#94A474",
+      "tickColor": "#fff",
+      "value": "green",
+      "displayName": "Зеленый",
+      "previewImage": "./assets/img/green.png",
+      "finalImage": "./assets/img/green-final.png"
+    },
+    {
+      "primaryColor": "#94A474",
+      "secondaryColor": "#000",
+      "tickColor": "#fff",
+      "value": "green-black",
+      "displayName": "Зеленый с черн. крышей",
+      "previewImage": "./assets/img/green-black.png",
+      "finalImage": "./assets/img/green-black-final.png"
+    },
+    {
+      "primaryColor": "#5B7376",
+      "secondaryColor": "#5B7376",
+      "tickColor": "#fff",
+      "value": "gray",
+      "displayName": "Серый",
+      "previewImage": "./assets/img/gray.png",
+      "finalImage": "./assets/img/gray-final.png"
+    },
+    {
+      "primaryColor": "#5B7376",
+      "secondaryColor": "#000000",
+      "tickColor": "#fff",
+      "value": "gray-black",
+      "displayName": "Серый с черн. крышей",
+      "previewImage": "./assets/img/gray-black.png",
+      "finalImage": "./assets/img/gray-black-final.png"
+    },
+    {
+      "primaryColor": "#B8B9BA",
+      "secondaryColor": "#B8B9BA",
+      "tickColor": "#fff",
+      "value": "silver",
+      "displayName": "Серебристый",
+      "previewImage": "./assets/img/silver.png",
+      "finalImage": "./assets/img/silver-final.png"
+    },
+    {
+      "primaryColor": "#B8B9BA",
+      "secondaryColor": "#000",
+      "tickColor": "#fff",
+      "value": "silver-black",
+      "displayName": "Серебристый с черн. крышей",
+      "previewImage": "./assets/img/silver-black.png",
+      "finalImage": "./assets/img/silver-black-final.png"
+    },
+    {
+      "primaryColor": "#000000",
+      "secondaryColor": "#000000",
+      "tickColor": "#fff",
+      "value": "black",
+      "displayName": "Черный",
+      "previewImage": "./assets/img/black.png",
+      "finalImage": "./assets/img/black-final.png"
+    },
+    {
+      "primaryColor": "#FCFFFF",
+      "secondaryColor": "#FCFFFF",
+      "tickColor": "#000",
+      "value": "white",
+      "displayName": "Белый",
+      "previewImage": "./assets/img/white.png",
+      "finalImage": "./assets/img/white-final.png"
+    }
+  ]
+}
