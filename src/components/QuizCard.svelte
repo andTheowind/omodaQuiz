@@ -1,6 +1,7 @@
 <script lang="ts">
   export let currentPage: number = 0;
 </script>
+
 <div class="card border-0 bg-transparent p-0">
   <slot name="cardHeader" />
 

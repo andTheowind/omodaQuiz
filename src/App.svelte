@@ -1,7 +1,9 @@
 <script lang="ts">
-  import CardHeader from "./components/CardHeader.svelte";
   import HeaderQuiz from "./components/HeaderQuiz.svelte";
   import FooterQuiz from "./components/FooterQuiz.svelte";
+
+  import BannerTitle from "./components/BannerTitle.svelte";
+  import BannerList from "./components/BannerList.svelte";
 
   import CardDefaultColumns from "./components/CardDefaultColumns.svelte";
   import CardSixColumns from "./components/CardSixColumns.svelte";
@@ -11,9 +13,22 @@
 
   import { windowSize } from "@sveu/browser";
   import { getCarsData, type CarInfo } from "./stores/carInfoStore";
+  import CardHeader from "./components/CardHeader.svelte";
   import QuizCard from "./components/QuizCard.svelte";
   import RadioColoredList from "./components/RadioColoredList.svelte";
   import RadioList from "./components/RadioList.svelte";
+  import FinalText from "./components/FinalText.svelte";
+  import { imask } from "@imask/svelte";
+
+
+  function accept({ detail: maskRef }: {detail: any}) {
+    console.log('accept ', maskRef.value);
+    value = maskRef.value;
+  }
+
+  function complete({ detail: maskRef }: {detail: any} ){
+    console.log('complete ', maskRef.unmaskedValue);
+  }
 
   let firstBanner = true;
 
@@ -53,7 +68,7 @@
   async function getPreviewImage(value: string) {
     let variant = await getVariantByValue(value);
     if(variant === undefined) {
-      return '/assets/img/black.png';
+      return './assets/img/black.png';
     }
     return variant.previewImage;
   }
@@ -95,17 +110,57 @@
   let isMailSent = false;
 
   async function sendMail(event: SubmitEvent) {
-      if(!event.target) {  throw new Error("bad target");  }
-      let formData = new FormData(event.target as HTMLFormElement);
-      
-      const data = await fetch('./send.php', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.text())
-      
-      isMailSent = true;
+    if(!event.target) { throw new Error("bad target"); }
+    let formData = new FormData(event.target as HTMLFormElement);
+    
+    const data = await fetch('./send.php', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.text())
   }
+
+  async function sendMailCalltouch(event: SubmitEvent) {
+    if (!event.target) {
+        throw new Error("bad target");
+    }
+    
+    let formData = new FormData(event.target as HTMLFormElement);
+    let params = new URLSearchParams();
+    params.append('fio', formData.get('name')?.toString() || '');
+    params.append('phoneNumber', formData.get('phone')?.toString() || '');
+    params.append('subject', 'Форма квиза Jaecoo');
+    params.append('requestUrl', location.href);
+    params.append('sessionId', '');
+
+    let url = `https://api.calltouch.ru/calls-service/RestAPI/requests/?${params.toString()}`;
+
+    try {
+        const response = await fetch(url, {
+            method: 'GET',
+        });
+        const data = await response.text();
+        console.log('Успешная отправка, параметры:', params);
+        console.log('complete, url = ', url);
+        // Дополнительные действия при успешном получении данных
+    } catch (error) {
+        console.error('Ошибка при отправке запроса:', error);
+        // Дополнительные действия при ошибке
+    }
+  }
+
+  async function sendAll(event: SubmitEvent) {
+    await sendMail(event);
+    await sendMailCalltouch(event);
+    isMailSent = true;
+  }
+
+  const options = {
+    mask: '+{7}(000) 000-00-00',
+    lazy: false
+  };
+
+  let value = '';
 </script>
 
 <HeaderQuiz></HeaderQuiz>
@@ -118,29 +173,10 @@
       <div class="row w-100">
         <div class="col-12">
           <div class="banner-content text-start">
-            <div class="banner-content-title">
-              <h1>JAECOO J7 </h1>
-              <p class="h2">с рекордной выгодой</p>
-              <p class="h3">до <b>1 000 000 ₽</b></p>
-            </div>
-            <ul class="banner-list">
-              <li>
-                <img src="./img/icons/icon-banner-1.svg" >
-                <span>Дарим бонусы по TRADE IN</span>
-              </li>
-              <li>
-                <img src="./img/icons/icon-banner-2.svg" >
-                <span>Авторассрочка до 78 месяцев</span>
-              </li>
-              <li>
-                <img src="./img/icons/icon-banner-3.svg" >
-                <span>Автомобили в наличии с ПТС</span>
-              </li>
-              <li>
-                <img src="./img/icons/icon-banner-4.svg" >
-                <span>Гарантия до 7 лет</span>
-              </li>
-            </ul>
+            <BannerTitle>
+            </BannerTitle>
+            <BannerList>
+            </BannerList>
             <div class="banner-btn-wrap">
               <button class="text-uppcase banner-btn" on:click={() => firstBanner = false}>Подобрать автомобиль</button>
             </div>
@@ -273,7 +309,7 @@
         </div>
       </CardSixColumns>
       <CardSixColumns>
-        <div class="final-info-wrap h-100" >
+        <div class="final-info-wrap h-100">
           {#if (isMailSent)}
           <div class="thx-txt-wrap d-flex align-items-center h-100">
             <div class="text-center text-lg-start mt-3 mt-lg-0">
@@ -282,19 +318,16 @@
                 Заявка отправлена!
               </h2>
               <p class="fw-normal h4">
-                Наш менеджер свяжется  <br>
+                Наш менеджер свяжется <br>
                 с Вами в ближайшее время
               </p>
             </div>
           </div>
           {:else}
-          <div class="final-text">
-            <p class="h3">За вашим номером закреплен бонус от салона: </p>
-            <p class="h1 fw-bold pt-1">КАСКО В ПОДАРОК</p>
-            <p class="h5 pt-3">По вашим параметрам найдено 5 автомобилей</p>
-          </div>
+          <FinalText>
+          </FinalText>
           <div class="final-form-wrap mt-4">
-            <form  on:submit|preventDefault={sendMail}  id="finalForm">
+            <form  on:submit|preventDefault={sendAll}  id="finalForm">
               <div>
                 <input type="hidden" class="w-100" name="valueColorCar" id="valueSelectedColorCar" bind:value={selectedColor}>
                 <input type="hidden" class="w-100" name="valueTradeIn" id="valueSelectedTradeIn" bind:value={selectedTradeIn}>
@@ -304,7 +337,13 @@
                 <input type="text" class="w-100 mb-0" name="name" id="name" placeholder="Имя" required >
               </div>
               <div class="me-0 me-lg-3 mb-2 mb-lg-2 pb-1 pb-lg-0">
-                <input type="text" class="w-100 mb-0" name="phone" id="phone" placeholder="Телефон" required >
+                <input 
+                  name="phone" 
+                  id="phone"
+                  {value}
+                  use:imask={options}
+                  on:input={(event) => accept({ detail: { maskRef: event.target } })}
+                >
               </div>
               <div class="ms-0 ms-lg-1 ms-lg-0">
                 <button type="submit" class="w-100 border-0 text-uppercase" id="finalButton" role="sendForm" >
@@ -338,8 +377,7 @@
             >
             </div>
             <div>
-              {variant?.displayName}  
-              <!-- {selectedColor} -->
+              {variant?.displayName}
             </div>
           </SelectedCardElement>
           {:catch}
@@ -405,10 +443,11 @@
       flex-direction: column;
       align-items: center;
       flex-grow: 1;
-    }
-    .container > div {
-      display: flex;
-      flex-grow: 1;
+
+      > div {
+        display: flex;
+        flex-grow: 1;
+      }
     }
 
   }
@@ -446,57 +485,6 @@
     flex-direction: column;
     justify-content: space-between;
     color: #fff;
-
-    h1 {
-      font-size: 74px;
-      font-weight: 700;
-      line-height: 100px;
-    }
-
-    .h2 {
-      font-size: 54px;
-      font-weight: 300 !important;
-      line-height: 73px;
-      text-transform: uppercase;
-    }
-
-    .h3 {
-      font-size: 36px;
-      font-weight: 400;
-      line-height: 45px;
-    }
-
-    .h3 span {
-      font-size: 58px;
-      font-weight: 400;
-      line-height: 73px;
-    }
-
-    .banner-content-title {
-      margin-top: 44px;
-      margin-bottom: 44px;
-    }
-
-    .banner-list {
-
-      padding-left: 0;
-      margin-left: 0;
-      z-index: 3;
-
-      li {
-        list-style: none;
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        margin-bottom: 17px;
-        font-size: 24px;
-      }
-
-      img {
-        margin-right: 20px;
-      }
-
-    }
 
     .banner-btn-wrap {
       margin-top: 25px;
@@ -550,7 +538,6 @@
 
   }
 
-  .final-text,
   #finalForm {
     text-align: left;
   }
@@ -581,8 +568,19 @@
   }
 
   #finalForm input::placeholder {
-    color: #636B70;
+    color: #747677;
     border-color: #ABBBBE;
+  }
+
+  #finalForm #phone {
+    color: #a3a3a3;
+    margin-bottom: 0;
+    width: 100%;
+  }
+
+  #finalForm #phone:active,
+  #finalForm #phone:focus {
+    color: #333;
   }
 
   #finalForm #finalButton {
@@ -673,37 +671,13 @@
 
   @media (max-width: 1199.98px) {
 
-    .banner-content {
-
-      h1 {
-        font-size: 62px;
-        line-height: 75px;
-      }
-
-      .h2 {
-        font-size: 28px;
-      }
-
-      .h3 {
-        font-size: 28px;
-        line-height: 30px;
-      }
-
-      .h3 span {
-        font-size: 38px;
-        font-weight: 400;
-        line-height: 45px;
-      }
-
-    }
-
     .final-name-car span {
       font-size: 74px;
     }
 
   }
 
-  @media (max-width: 991.98px) {
+  @media (max-width: 992px) {
 
     .final-image-wrap {
       margin-top: 22px;
@@ -723,12 +697,12 @@
     #finalForm #finalButton {
       max-width: 100%;
     }
+
     .controls {
       border-top: 1px solid #C0CCCE;
     }
 
   }
-
 
   @media (max-width: 767.98px) {
 
@@ -757,61 +731,6 @@
       height: 100%;
       justify-content: space-around;
 
-      h1 {
-        font-size: 60px;
-        line-height: 75px;
-      }
-
-      .h2 {
-        font-size: 24px;
-        font-weight: 300;
-      }
-
-      .h3 {
-        font-size: 24px;
-        font-weight: 400;
-        line-height: 30px;
-      }
-
-      .h3 span {
-        font-size: 36px;
-        font-weight: 400;
-        line-height: 45px;
-      }
-
-      .banner-content-title {
-        margin-top: 55px;
-        margin-bottom: 22px;
-        padding-bottom: 22px;
-
-        h1 {
-          padding-top: 26px;
-          margin-bottom: 0;
-        }
-        .h2 {
-          margin-bottom: 0;
-          padding-bottom: 3px;
-          line-height: 1.75;
-        }
-      }
-
-      .banner-list {
-        padding-top: 232px;
-        padding-left: 0;
-        margin-left: 0;
-
-        li {
-          font-size: 16px;
-          line-height: 20px;
-          margin-bottom: 8px;
-        }
-        img {
-          height: 24px;
-          width: 24px;
-        }
-
-      }
-
       .banner-btn-wrap {
         margin-top: 10px;
         margin-bottom: 45px;
@@ -834,18 +753,6 @@
       font-size: 45px;
     }
 
-    .final-text p.h3 {
-      font-size: 15px;
-    }
-
-    .final-text p.h1 {
-      font-size: 30px;
-    }
-
-    .final-text p.h5 {
-      font-size: 14px;
-    }
-
   }
 
   @media (max-width: 479.98px) {
@@ -857,10 +764,6 @@
       background-position: 50% 74%;
 
       .banner-content {
-
-        .banner-content-title {
-          margin-top: 40px;
-        }
 
         .banner-btn-wrap {
           text-align: center;
@@ -874,65 +777,11 @@
 
       }
 
-      .banner-list {
-        padding-top: 120px;
-      }
-
-      .banner-content-title {
-        h1 {
-          padding-top: 5px;
-        }
-      }
-
-    }
-
-  }
-
-  @media (max-width: 359.98px) {
-
-    .banner-content {
-
-      h1 {
-        font-size: 50px;
-      }
-
     }
 
   }
 
   @media (min-width: 1200px) and (max-width: 1919.98px) {
-
-    .banner-content {
-
-      .banner-content-title {
-        margin-top: 32px;
-        margin-bottom: 28px;
-      }
-
-      h1 {
-        font-size: 64px;
-        line-height: 80px;
-      }
-
-      .h2 {
-        font-size: 44px;
-        line-height: 60px;
-      }
-
-      .h3 {
-        font-size: 46px;
-        line-height: 60px;
-      }
-
-      .banner-list {
-
-        li {
-          font-size: 21px;
-        }
-
-      }
-
-    }
 
     .preview-img-wrap {
       max-width: 686px;

@@ -5,7 +5,7 @@
         class="сol-6 col-sm-12 col-lg-6 col-xl-4 col-sm-auto first-header-block justify-content-between justify-content-xl-start col-md-12 col-xl-4 d-flex align-items-center"
       >
         <div class="me-3 d-md-block">
-          <a href="/" class="pt-0 pt-md-3 logo-link">
+          <a href="./" class="pt-0 pt-md-3 logo-link">
             <img src="./img/logo.svg" class="img-fluid" />
           </a>
         </div>
@@ -51,7 +51,7 @@
           </a>
         </div>
         <div class="header-group-blocks me-0 ms-md-2">
-          <a
+          <!-- <a
             href="#callback"
             class="d-none d-lg-block callback-btn py-2 px-2 px-xl-3 px-xxl-5 text-white w-100"
             data-remodal-target="callback"
@@ -60,7 +60,7 @@
               Обратный звонок
             </span>
             <img src="/assets/images/phone.svg" class="d-md-none" />
-          </a>
+          </a> -->
         </div>
       </div>
     </div>

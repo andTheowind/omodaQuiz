@@ -18,15 +18,16 @@
     display: flex;
     align-items: center;
     padding: 5px 0;
-  }
 
-  .card-title p {
-    text-align: left;
-    margin-bottom: 0;
-    max-width: 254px;
-    font-size: 18px;
-    font-weight: 500;
-    text-transform: uppercase;
+    p {
+      text-align: left;
+      margin-bottom: 0;
+      max-width: 254px;
+      font-size: 18px;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+
   }
 
   .page {
@@ -60,7 +61,6 @@
     }
 
     .card-index {
-
       padding: 4px 10px;
 
       span {
